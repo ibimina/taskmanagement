@@ -1,8 +1,9 @@
 import express from 'express';
 import * as bodyParser from 'body-parser';
-import Controller from 'interfaces/controller.interface';
+import Controller from './interfaces/controller.interface';
 import * as mongoose from 'mongoose';
-// import * as mongoose from ''
+import errorMiddleware from './middleware/error.middleware';
+
  
 class App {
   public app: express.Application;
@@ -15,6 +16,7 @@ class App {
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     this.connectToDatabase()
+    this.initializeErrorHandling()
   }
  
   private initializeMiddlewares() {
@@ -23,18 +25,22 @@ class App {
  
   private initializeControllers(controllers: Controller[]) {
     controllers.forEach((controller:Controller) => {
-      this.app.use('/', controller.router);
+      this.app.use('/api/v1/', controller.router);
     });
   }
  
   private connectToDatabase(){
     const {DATABASE_URL} = process.env
-    // mongoose.connect(DATABASE_URL)
+    mongoose.connect(DATABASE_URL)
   }
+ 
   public listen() {
     this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
     });
+  }
+    private initializeErrorHandling() {
+    this.app.use(errorMiddleware);
   }
 }
  
