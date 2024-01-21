@@ -8,7 +8,7 @@ import TokenData from "interfaces/token.interface";
 import User from "interfaces/user.interface";
 import DataStoredInToken from "interfaces/dataStoredInToken.interface";
 import * as jwt from "jsonwebtoken";
-import { response } from "express";
+import { ResetPasswordDto } from "./dto";
 
 class AuthService {
   private account = accountModel;
@@ -32,13 +32,12 @@ class AuthService {
         });
         // (await createAccount).save();
         (await createAccount).password = undefined;
-        
-        
+
         return createAccount;
       });
       session.endSession();
       const tokenData = this.createToken(createAccount);
-      return {createAccount,tokenData};
+      return { createAccount, tokenData };
     } catch (error) {
       return error;
     }
@@ -59,8 +58,8 @@ class AuthService {
         throw new HttpException(401, "Wrong credentials provided");
       }
       user.password = undefined;
-    const tokenData = this.createToken(user);
-      return {user,tokenData};
+      const tokenData = this.createToken(user);
+      return { user, tokenData };
     } catch (error) {
       return error;
     }
@@ -76,6 +75,15 @@ class AuthService {
       expiresIn,
       token: jwt.sign(dataStoredInToken, secret, { expiresIn }),
     };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    try {
+      const {email, password, newPassword} = resetPasswordDto
+
+    } catch (error) {
+      return error;
+    }
   }
 }
 export default AuthService;
